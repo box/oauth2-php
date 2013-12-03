@@ -1,0 +1,6 @@
+{
+	"name": "box/oauth2-php",
+	"autoload": {
+        "classmap": ["lib/"]
+    }
+}
