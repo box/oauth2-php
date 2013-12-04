@@ -841,16 +841,18 @@ class OAuth2 {
 		
 		// Select the redirect URI
 		$input["redirect_uri"] = isset($input["redirect_uri"]) ? $input["redirect_uri"] : $stored["redirect_uri"];
-
+		
 		// type and client_id are required
 		if (!$input["response_type"]) {
 			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_REQUEST, 'Invalid or missing response type.', $input["state"]);
 		}
-
-		if ($input['response_type'] != self::RESPONSE_TYPE_AUTH_CODE && $input['response_type'] != self::RESPONSE_TYPE_ACCESS_TOKEN) {
+		
+		// Check requested auth response type against interfaces of storage engine
+		$reflect = new ReflectionClass($this->storage);
+		if (!$reflect->hasConstant('RESPONSE_TYPE_' . strtoupper($input['response_type']))) {
 			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
 		}
-
+		
 		// Validate that the requested scope is supported
 		if ($input["scope"] && !$this->checkScope($input["scope"], $this->getVariable(self::CONFIG_SUPPORTED_SCOPES))) {
 			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $input["state"]);
