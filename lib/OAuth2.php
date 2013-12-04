@@ -896,13 +896,7 @@ class OAuth2 {
 	 * @ingroup oauth2_section_4
 	 */
 	public function finishClientAuthorization($is_authorized, $user_id = NULL, $params = array()) {
-		list($redirect_uri, $result) = $this->getAuthResult($is_authorized, $user_id, $params);
-		$this->doRedirectUriCallback($redirect_uri, $result);
-	}
-
-	// same params as above
-	public function getAuthResult($is_authorized, $user_id = NULL, $params = array()) {
-
+		
 		// We repeat this, because we need to re-validate. In theory, this could be POSTed
 		// by a 3rd-party (because we are not internally enforcing NONCEs, etc)
 		$params = $this->getAuthorizeParams($params);
@@ -923,8 +917,8 @@ class OAuth2 {
 				$result["fragment"] = $this->createAccessToken($client_id, $user_id, $scope);
 			}
 		}
-
-		return array($redirect_uri, $result);
+		
+		$this->doRedirectUriCallback($redirect_uri, $result);
 	}
 
 	// Other/utility functions.
